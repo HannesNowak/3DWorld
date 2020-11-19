@@ -5,7 +5,7 @@ import java.util.*;
 
 import javax.swing.*;
 
-import berechnungen.*;
+import basis.MySurface;
 import objekte.*;
 
 public class Window extends JPanel implements Runnable {
@@ -19,8 +19,10 @@ public class Window extends JPanel implements Runnable {
 	
 	Thread t;
 //	camera(width/2, height/2, (height/2) / tan(PI/6), width/2, height/2, 0, 0, 1, 0);
-	MyCamera cam = new MyCamera(frame.getWidth()/2, frame.getHeight()/2, (float) ((getHeight()/2) / Math.tan(Math.PI/6)), 0, 0, 0);
-	MyCube[] cubes;
+//	public MyCamera cam = new MyCamera(frame.getWidth()/2, frame.getHeight()/2, (float) ((getHeight()/2) / Math.tan(Math.PI/6)), 0, 0, 0);
+	public MyCamera cam = new MyCamera(0, 0, 0, 0, 0, -1);
+	MyObject[] objects;
+	MySurface[] surfaces;
 	
 	int ups = 60, maxFps = 120, stroke = 4;
 	
@@ -47,26 +49,44 @@ public class Window extends JPanel implements Runnable {
 		addMouseListener(cam);
 		addMouseMotionListener(cam);
 		
-		cubes = new MyCube[8];
-//		cubes[0] = new MyCube(0, 0, 0, 200f);
+		objects = new MyCube[27];
 		
-//		cubes[0] = new MyCube(25, 25, 25, 50f);
-//		cubes[1] = new MyCube(25, 25, -25, 50f);
-//		cubes[2] = new MyCube(25, -25, 25, 50f);
-//		cubes[3] = new MyCube(25, -25, -25, 50f);
-//		cubes[4] = new MyCube(-25, 25, 25, 50f);
-//		cubes[5] = new MyCube(-25, 25, -25, 50f);
-//		cubes[6] = new MyCube(-25, -25, 25, 50f);
-//		cubes[7] = new MyCube(-25, -25, -25, 50f);
+		objects[0] = new MyCube(60, 60, 60, 50f);
+		objects[1] = new MyCube(0, 60, 60, 50f);
+		objects[2] = new MyCube(-60, 60, 60, 50f);
+		objects[3] = new MyCube(60, 0, 60, 50f);
+		objects[4] = new MyCube(0, 0, 60, 50f);
+		objects[5] = new MyCube(-60, 0, 60, 50f);
+		objects[6] = new MyCube(60, -60, 60, 50f);
+		objects[7] = new MyCube(0, -60, 60, 50f);
+		objects[8] = new MyCube(-60, -60, 60, 50f);
+
+		objects[9] = new MyCube(60, 60, 0, 50f);
+		objects[10] = new MyCube(0, 60, 0, 50f);
+		objects[11] = new MyCube(-60, 60, 0, 50f);
+		objects[12] = new MyCube(60, 0, 0, 50f);
+		objects[13] = new MyCube(0, 0, 0, 50f);
+		objects[14] = new MyCube(-60, 0, 0, 50f);
+		objects[15] = new MyCube(60, -60, 0, 50f);
+		objects[16] = new MyCube(0, -60, 0, 50f);
+		objects[17] = new MyCube(-60, -60, 0, 50f);
 		
-		cubes[0] = new MyCube(50, 50, 50, 0, 0, 0, 50f, 1);
-		cubes[1] = new MyCube(50, 50, -50, 50f);
-		cubes[2] = new MyCube(50, -50, 50, 50f);
-		cubes[3] = new MyCube(50, -50, -50, 50f);
-		cubes[4] = new MyCube(-50, 50, 50, 50f);
-		cubes[5] = new MyCube(-50, 50, -50, 50f);
-		cubes[6] = new MyCube(-50, -50, 50, 50f);
-		cubes[7] = new MyCube(-50, -50, -50, 50f);
+		objects[18] = new MyCube(60, 60, -60, 50f);
+		objects[19] = new MyCube(0, 60, -60, 50f);
+		objects[20] = new MyCube(-60, 60, -60, 50f);
+		objects[21] = new MyCube(60, 0, -60, 50f);
+		objects[22] = new MyCube(0, 0, -60, 50f);
+		objects[23] = new MyCube(-60, 0, -60, 50f);
+		objects[24] = new MyCube(60, -60, -60, 50f);
+		objects[25] = new MyCube(0, -60, -60, 50f);
+		objects[26] = new MyCube(-60, -60, -60, 50f);
+		
+		surfaces = new MySurface[objects.length*6];
+		for (int i = 0; i < objects.length; i++) {
+			for (int j = 0; j < objects[i].surfaces.length; j++) {
+				surfaces[j+(i*6)] = objects[i].surfaces[j];
+			}
+		}
 		
 		t = new Thread(this, "Window");
 		t.start();
@@ -81,18 +101,20 @@ public class Window extends JPanel implements Runnable {
 		
 		cam.update();
 		
-		for (MyCube c : cubes) {
-			c.update(c.angleX, c.angleY, c.angleZ, cam);
-			c.angleX = cam.angleX;
-			c.angleY = cam.angleY;
-			c.angleZ = cam.angleZ;
+		for (MyObject obj : objects) {
+			obj.update(cam);
+		}
+//		System.out.println("Pos: X: " + cam.pos.x + " | Y: " + cam.pos.y + " | Z: " + cam.pos.z);
+//		System.out.println("Dir: X: " + cam.dir.x + " | Y: " + cam.dir.y + " | Z: " + cam.dir.z);
+		
+		Arrays.sort(surfaces);
+		for (MySurface s : surfaces) {
+			s.render(g2d, cam);
 		}
 		
-		Arrays.sort(cubes);
-		for (MyCube c : cubes) {
-//			System.out.println(c.z);
-			c.render(g2d, cam);
-		}
+//		for (MyCube c : cubes) {
+//			c.render(g2d, cam);
+//		}
 		
 		g2d.dispose();
 	}

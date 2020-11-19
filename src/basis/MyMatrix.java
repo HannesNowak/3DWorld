@@ -1,15 +1,20 @@
-package berechnungen;
-
-import objekte.MyVector;
+package basis;
 
 public class MyMatrix {
 	
 	public static float[][] vectorToMatrix(MyVector v) {
 		return new float[][] {{v.x}, {v.y}, {v.z}};
 	}
+	public static float[][] pointToMatrix(MyPoint p) {
+		return new float[][] {{p.x}, {p.y}, {p.z}};
+	}
 	
 	public static MyVector matrixToVector(float[][] matrix) {
-		return new MyVector(matrix);
+		return new MyVector(matrix[0][0], matrix[1][0], matrix[2][0]);
+	}
+	
+	public static MyPoint matrixToPoint(float[][] matrix) {
+		return new MyPoint(matrix[0][0], matrix[1][0], matrix[2][0]);
 	}
 	
 	public static float[][] matrixMultiplikation(float[][] a, MyVector v) {

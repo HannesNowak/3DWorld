@@ -1,23 +1,27 @@
-package berechnungen;
+package visualisierung;
 
 import java.awt.event.*;
 
+import basis.*;
+
 public class MyCamera implements MouseMotionListener, MouseListener, KeyListener  {
-	public float x, y, z, angleX, angleY, angleZ;
+	
+	public MyPoint pos;
+	public MyVector dir;
 	public int mouseX, mouseY, geschwindigkeit = 8;
 	
 	boolean[] tasten = new boolean[200];
 	boolean vorne, hinten, links, rechts, runter, hoch, exit;
 	
 	public MyCamera(float x, float y, float z, float angleX, float angleY, float angleZ) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.angleX = angleX;
-		this.angleY = angleY;
-		this.angleZ = angleZ;
+		this(new MyPoint(x, y, z), new MyVector(angleX, angleY, angleZ));
 	}
 	
+	public MyCamera(MyPoint pos, MyVector view) {
+		this.pos = pos;
+		this.dir = view;
+	}
+
 	public void update() {
 		vorne = tasten[KeyEvent.VK_W] || tasten[KeyEvent.VK_UP];
 		hinten = tasten[KeyEvent.VK_S] || tasten[KeyEvent.VK_DOWN];
@@ -29,12 +33,12 @@ public class MyCamera implements MouseMotionListener, MouseListener, KeyListener
 		
 		
 		//TODO Camera bewegen und nicht Angle Rotieren
-		if (rechts) x += geschwindigkeit*1;
-		if (links) x -= geschwindigkeit*1;
-		if (hoch) y += geschwindigkeit*1;
-		if (runter) y -= geschwindigkeit*1;
-		if (vorne) z += geschwindigkeit*1;
-		if (hinten) z -= geschwindigkeit*1;
+		if (rechts) pos.x += geschwindigkeit*1;
+		if (links) pos.x -= geschwindigkeit*1;
+		if (hoch) pos.y += geschwindigkeit*1;
+		if (runter) pos.y -= geschwindigkeit*1;
+		if (vorne) pos.z += geschwindigkeit*1;
+		if (hinten) pos.z -= geschwindigkeit*1;
 		
 //		if (rechts) angleX += geschwindigkeit*0.005f;
 //		if (links) angleX -= geschwindigkeit*0.005f;
@@ -62,8 +66,8 @@ public class MyCamera implements MouseMotionListener, MouseListener, KeyListener
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		angleX += ((float)(e.getX() - mouseX)/100);
-		angleY += ((float)(e.getY() - mouseY)/100);
+		dir.x += ((float)(e.getX() - mouseX)/100);
+		dir.y += ((float)(e.getY() - mouseY)/100);
 //		angleX += ((float)(e.getX() - angleX)/1000);
 //		angleY += ((float)(e.getY() - angleX)/1000);
 		
